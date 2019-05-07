@@ -109,32 +109,32 @@ class SiteController extends Controller
                 }  
             $ids_product_list = implode(',',array_unique($ids_product_list)); // унифицируем массив и разбиваем в строку для запроса
 
-
-
-            // получаем книги с прикрепленными авторами по id-шникам
-            $query = 'SELECT 
-                      *,
-                      (SELECT 
-                        GROUP_CONCAT(`authors`.`name` SEPARATOR \' \') 
-                      FROM
-                        `book_author_link` 
-                        JOIN
-                        `authors` 
-                        ON `authors`.`id` = book_author_link.id_author 
-                      WHERE book_author_link.id_book = books.id) AS author_c,
-                      (SELECT 
-                        GROUP_CONCAT(`shops`.`name` SEPARATOR \', \') 
-                      FROM
-                        `book_shop_link` 
-                        JOIN
-                        `shops` 
-                        ON `shops`.`id` = book_shop_link.id_shop 
-                      WHERE book_shop_link.id_book = books.id) AS shop_c 
-                    FROM
-                      books 
-                    WHERE books.id IN ('.$ids_product_list.');';
-            $books_ajax = Book::findBySql($query)->asArray()->all();
-
+            $books_ajax = array();
+            if(!empty($ids_product_list)){
+                        // получаем книги с прикрепленными авторами по id-шникам
+                        $query = 'SELECT 
+                                  *,
+                                  (SELECT 
+                                    GROUP_CONCAT(`authors`.`name` SEPARATOR \' \') 
+                                  FROM
+                                    `book_author_link` 
+                                    JOIN
+                                    `authors` 
+                                    ON `authors`.`id` = book_author_link.id_author 
+                                  WHERE book_author_link.id_book = books.id) AS author_c,
+                                  (SELECT 
+                                    GROUP_CONCAT(`shops`.`name` SEPARATOR \', \') 
+                                  FROM
+                                    `book_shop_link` 
+                                    JOIN
+                                    `shops` 
+                                    ON `shops`.`id` = book_shop_link.id_shop 
+                                  WHERE book_shop_link.id_book = books.id) AS shop_c 
+                                FROM
+                                  books 
+                                WHERE books.id IN ('.$ids_product_list.');';
+                        $books_ajax = Book::findBySql($query)->asArray()->all();
+            }
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             
             return $books_ajax;

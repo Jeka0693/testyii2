@@ -1,7 +1,7 @@
 
 $(document).ready(function(){
 	var intervalId;	
-	$('.selSel').bind('change',function(){
+	$('.selSel').bind('change',function(){ $('.vitrina').html('');
 		if(intervalId){
 			clearTimeout(intervalId);
 		}
